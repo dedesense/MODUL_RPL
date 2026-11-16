@@ -1,88 +1,163 @@
+import sys
+from pathlib import Path
+
 import customtkinter as ctk
 from tkinter import ttk
 
-class AnggotaView(ctk.CTk):
-    def __init__(self):
-        super().__init__()
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-        # --- Konfigurasi Jendela Utama ---
-        self.title("Sistem Manajemen Perpustakaan - Data Anggota")
-        self.geometry("900x500")
+from views.retro_theme import (
+    ACCENT,
+    ACCENT_HOVER,
+    BACKGROUND,
+    BORDER,
+    FIELD,
+    FONT_NAME,
+    HIGHLIGHT,
+    MUTED_TEXT,
+    PANEL,
+    PANEL_LIGHT,
+    TEXT,
+    add_pixel_rule,
+    style_treeview,
+)
+
+
+class AnggotaView(ctk.CTkFrame):
+    def __init__(self, parent):
+        super().__init__(parent, fg_color=BACKGROUND, corner_radius=0)
+
+        self.frame_kiri = ctk.CTkFrame(
+            self,
+            fg_color=PANEL,
+            border_width=2,
+            border_color=ACCENT,
+            corner_radius=0,
+        )
+        self.frame_kiri.pack(side="left", fill="y", padx=(0, 8), pady=8)
+
+        self.lbl_judul_form = ctk.CTkLabel(
+            self.frame_kiri,
+            text="FORM DATA ANGGOTA",
+            text_color=HIGHLIGHT,
+            font=(FONT_NAME, 13, "bold"),
+        )
+        self.lbl_judul_form.pack(pady=(22, 16), padx=16)
+        add_pixel_rule(self.frame_kiri)
+
+        input_style = {
+            "fg_color": FIELD,
+            "text_color": TEXT,
+            "placeholder_text_color": MUTED_TEXT,
+            "border_color": BORDER,
+            "border_width": 2,
+            "corner_radius": 0,
+            "height": 38,
+            "width": 250,
+            "font": (FONT_NAME, 10),
+        }
+        self.entry_nama = ctk.CTkEntry(
+            self.frame_kiri,
+            placeholder_text="Masukkan Nama Anggota",
+            **input_style,
+        )
+        self.entry_nama.pack(pady=8, padx=16)
+
+        self.entry_alamat = ctk.CTkEntry(
+            self.frame_kiri,
+            placeholder_text="Masukkan Alamat",
+            **input_style,
+        )
+        self.entry_alamat.pack(pady=(8, 20), padx=16)
+
+        button_style = {
+            "text_color": TEXT,
+            "corner_radius": 0,
+            "height": 38,
+            "font": (FONT_NAME, 10, "bold"),
+        }
+        self.btn_simpan = ctk.CTkButton(
+            self.frame_kiri,
+            text="Simpan Data",
+            fg_color=ACCENT,
+            hover_color=ACCENT_HOVER,
+            border_width=2,
+            border_color=HIGHLIGHT,
+            **button_style,
+        )
+        self.btn_simpan.pack(pady=8, padx=16, fill="x")
+
+        self.btn_update = ctk.CTkButton(
+            self.frame_kiri,
+            text="Perbarui Data (Update)",
+            fg_color=PANEL_LIGHT,
+            hover_color=BORDER,
+            border_width=2,
+            border_color=HIGHLIGHT,
+            **button_style,
+        )
+        self.btn_update.pack(pady=8, padx=16, fill="x")
+
+        self.btn_delete = ctk.CTkButton(
+            self.frame_kiri,
+            text="Hapus Data (Delete)",
+            fg_color="#743222",
+            hover_color=ACCENT_HOVER,
+            border_width=2,
+            border_color=HIGHLIGHT,
+            **button_style,
+        )
+        self.btn_delete.pack(pady=8, padx=16, fill="x")
+
+        self.frame_kanan = ctk.CTkFrame(
+            self,
+            fg_color=PANEL,
+            border_width=2,
+            border_color=ACCENT,
+            corner_radius=0,
+        )
+        self.frame_kanan.pack(side="right", fill="both", expand=True, padx=(8, 0), pady=8)
+
+        self.lbl_judul_tabel = ctk.CTkLabel(
+            self.frame_kanan,
+            text="DAFTAR ANGGOTA PERPUSTAKAAN",
+            text_color=HIGHLIGHT,
+            font=(FONT_NAME, 13, "bold"),
+        )
+        self.lbl_judul_tabel.pack(pady=(22, 12))
+        add_pixel_rule(self.frame_kanan)
+
+        style_treeview(self)
+
+        kolom_tabel = ("id_anggota", "nama", "alamat")
+        self.tabel_anggota = ttk.Treeview(
+            self.frame_kanan,
+            columns=kolom_tabel,
+            show="headings",
+            height=15,
+            style="Retro.Treeview",
+        )
         
-        # Mengatur tema tampilan menjadi terang agar sesuai dengan gambar
-        ctk.set_appearance_mode("light") 
+        self.tabel_anggota.heading("id_anggota", text="ID")
+        self.tabel_anggota.column("id_anggota", width=50, anchor="center")
 
-        # ==========================================
-        # FRAME KIRI (Form Data Anggota)
-        # ==========================================
-        self.frame_kiri = ctk.CTkFrame(self, corner_radius=10)
-        self.frame_kiri.pack(side="left", fill="y", padx=20, pady=20)
+        self.tabel_anggota.heading("nama", text="NAMA ANGGOTA")
+        self.tabel_anggota.column("nama", width=250, anchor="w")
 
-        # Judul Form
-        self.lbl_judul_form = ctk.CTkLabel(self.frame_kiri, text="Form Data Anggota", font=ctk.CTkFont(size=16, weight="bold"))
-        self.lbl_judul_form.pack(pady=(20, 20), padx=20)
+        self.tabel_anggota.heading("alamat", text="ALAMAT")
+        self.tabel_anggota.column("alamat", width=300, anchor="w")
 
-        # Input Nama Anggota
-        self.entry_nama = ctk.CTkEntry(self.frame_kiri, placeholder_text="Masukkan Nama Anggota", width=250)
-        self.entry_nama.pack(pady=10, padx=20)
-
-        # Input Alamat
-        self.entry_alamat = ctk.CTkEntry(self.frame_kiri, placeholder_text="Masukkan Alamat", width=250)
-        self.entry_alamat.pack(pady=(10, 30), padx=20) # Padding bawah lebih besar untuk jarak ke tombol
-
-        # Tombol Simpan Data (Hijau)
-        self.btn_simpan = ctk.CTkButton(self.frame_kiri, text="Simpan Data", fg_color="green", hover_color="darkgreen")
-        self.btn_simpan.pack(pady=10, padx=20, fill="x")
-
-        # Tombol Perbarui Data (Biru)
-        self.btn_update = ctk.CTkButton(self.frame_kiri, text="Perbarui Data (Update)", fg_color="blue", hover_color="darkblue")
-        self.btn_update.pack(pady=10, padx=20, fill="x")
-
-        # Tombol Hapus Data (Merah)
-        self.btn_delete = ctk.CTkButton(self.frame_kiri, text="Hapus Data (Delete)", fg_color="red", hover_color="darkred")
-        self.btn_delete.pack(pady=10, padx=20, fill="x")
-
-        # ==========================================
-        # FRAME KANAN (Daftar Anggota Perpustakaan)
-        # ==========================================
-        self.frame_kanan = ctk.CTkFrame(self, corner_radius=10)
-        self.frame_kanan.pack(side="right", fill="both", expand=True, padx=(0, 20), pady=20)
-
-        # Judul Tabel
-        self.lbl_judul_tabel = ctk.CTkLabel(self.frame_kanan, text="Daftar Anggota Perpustakaan", font=ctk.CTkFont(size=16, weight="bold"))
-        self.lbl_judul_tabel.pack(pady=(20, 20))
-
-        # --- Konfigurasi Tabel (Treeview) ---
-        style = ttk.Style()
-        style.theme_use("default")
-        style.configure("Treeview.Heading", font=('Arial', 10, 'bold'))
-        style.configure("Treeview", font=('Arial', 10), rowheight=25)
-
-        # Mendefinisikan Kolom Tabel
-        kolom_tabel = ("ID", "Nama Anggota", "Alamat")
-        self.tabel_anggota = ttk.Treeview(self.frame_kanan, columns=kolom_tabel, show="headings", height=15)
-        
-        # Mengatur Nama dan Lebar Kolom
-        self.tabel_anggota.heading("ID", text="ID")
-        self.tabel_anggota.column("ID", width=50, anchor="center")
-
-        self.tabel_anggota.heading("Nama Anggota", text="Nama Anggota")
-        self.tabel_anggota.column("Nama Anggota", width=250, anchor="w")
-
-        self.tabel_anggota.heading("Alamat", text="Alamat")
-        self.tabel_anggota.column("Alamat", width=300, anchor="w")
-
-        self.tabel_anggota.pack(fill="both", expand=True, padx=20, pady=(0, 20))
-
-        # --- Memasukkan Data Dummy (Sesuai Contoh Gambar) ---
-        data_dummy = [
-            ("1", "Ario Setiawan Dg.Malino  F5212520076", "Jl. Soekarno Hatta No. 14"),
-            ("2", "Aulia Pratiwi Ayuningtias", "Jl. Marantale No. 7")
-        ]
-        
-        for data in data_dummy:
-            self.tabel_anggota.insert("", "end", values=data)
+        self.tabel_anggota.pack(fill="both", expand=True, padx=16, pady=(0, 16))
 
 if __name__ == "__main__":
-    app = AnggotaView()
-    app.mainloop()
+    from controller.anggota_controller import AnggotaController
+
+    root = ctk.CTk()
+    root.title("Sistem Manajemen Perpustakaan - Data Anggota")
+    root.geometry("900x500")
+    ctk.set_appearance_mode("dark")
+    app = AnggotaView(root)
+    app.pack(fill="both", expand=True)
+    controller = AnggotaController(app)
+    root.mainloop()
